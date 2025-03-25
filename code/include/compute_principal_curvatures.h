@@ -164,7 +164,8 @@ void compute_principal_curvatures(
             coeffs = A.colPivHouseholderQr().solve(b);
         } else {
             // Minimum norm solution if not enough points
-            coeffs = A.jacobiSvd(ComputeThinU | ComputeThinV).solve(b);
+            JacobiSVD<MatrixXd> svd(A, ComputeThinU | ComputeThinV);
+            coeffs = svd.solve(b);
         }
 
         // Extract quadratic coefficients
@@ -216,8 +217,16 @@ void compute_principal_curvatures(
         // Ensure principal directions are perpendicular to normal
         // Project out any component along the normal
         Vector3d normal_vec = vertexNormals.row(v);
-        d1.row(v) = (d1.row(v) - d1.row(v).dot(normal_vec) * normal_vec).normalized();
-        d2.row(v) = (d2.row(v) - d2.row(v).dot(normal_vec) * normal_vec).normalized();
+        Vector3d dir1 = d1.row(v);
+        Vector3d dir2 = d2.row(v);
+
+        // Project out any component along the normal
+        dir1 = dir1 - dir1.dot(normal_vec) * normal_vec;
+        dir2 = dir2 - dir2.dot(normal_vec) * normal_vec;
+
+        // Normalize and store back
+        d1.row(v) = dir1.normalized();
+        d2.row(v) = dir2.normalized();
     }
 
     return;

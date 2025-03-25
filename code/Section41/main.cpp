@@ -29,7 +29,7 @@ MatrixXd d1, d2;     // Principal directions
 
 int main()
 {
-    readOFF(DATA_PATH "/bunny.off", V, F);
+    readOFF(DATA_PATH "/Flat.off", V, F);
     create_edge_list(F, E, EF, boundEMask, boundVMask, boundVertices);
 
     polyscope::init();
